@@ -26,7 +26,7 @@ int printlist(int i, int n, int list[]); /*print list*/
 
 int main()
 {
-    int i, n, f;
+    int i, n, find;
     int list[MAX_SIZE];
     printf("Enter the number of numbers to generate: ");
     scanf_s("%d", &n);
@@ -48,10 +48,10 @@ int main()
     printlist(i, n, list);
 
     printf("Enter the number to find: ");
-    scanf_s("%d", &f);
+    scanf_s("%d", &find);
 
-    int temp = binsearch(list, f, 0, n - 1);
-    printlist(i, n, list);
+    int temp = binsearch(list, find, 0, n - 1);
+    printlist(i, n+1, list);
 
     return 0;
 }
@@ -70,8 +70,7 @@ void sort(int list[], int n)
 }
 
 int binsearch(int list[], int searchnum, int left, int right) {
-    int middle, shifter;
-    int L = left;
+    int middle = 0;
     int R = right;
 
     while (left <= right) {
@@ -79,27 +78,30 @@ int binsearch(int list[], int searchnum, int left, int right) {
         switch (COMPARE(list[middle], searchnum)) {
             case -1: left = middle + 1;
                 break;
-            case 0: return middle;
+            case 0: printf("middle: %d\n", middle); return middle;
             case 1: right = middle - 1;
         }
     }
+    printf("value does not exist\n");
 
-    if ( (COMPARE(list[middle], searchnum)) != 1) { //mid보다 searchnum이 크면 mid 오른쪽 시작, 나머지 부분들은 오른쪽으로 쭉쭉 밀어야겠네
-        for (shifter = middle + 1; shifter < R; shifter++) {
-            list[shifter] = list[shifter + 1];//다시방..ㅈ
-        }
-        printf("matching number does NOT exist\n");
-        printf("number inserted right side of middle\n");
-        list[middle + 1] = searchnum;
-    }
-    else {
+    printf("shift list to right to make emptied memory dest\n");
 
+    int i = 0;
+    while ( (list[i] < searchnum) && (list[i] > 0) ) i++;   //search proper dest to insert 'searchnum'
+    int dest = i - 1;
+
+    while ((R + 1) != i) {  //shift array elements to the right, until get free space to insert 'searchnum'
+        list[R + 1] = list[R];
+        R--;
     }
+    list[dest + 1] = searchnum; //insert 'searchnum'
+    
     return -1;
 }
 
 int printlist(int i, int n, int list[]) {
     for (i = 0; i < n; i++)
-        printf("%d  ", list[i]);
+           if(list[i] > 0)
+               printf("%d  ", list[i]);
     printf("\n");
 }
