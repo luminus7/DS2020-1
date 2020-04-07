@@ -33,7 +33,8 @@ void printpoly(polynomial *list[], int n)
 	printf("printpoly: on\n");
 	for(int i = 0; i < n ; i++){ 
 		printf("%dx^%d ", (list[i]->coef), list[i]->exp);
-		printf("+ ");
+		if(i != 2)
+			printf("+ ");
 	} 
 	printf("\n"); 
 }
