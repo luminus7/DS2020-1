@@ -16,7 +16,8 @@ polynomial* C[MAX_SIZE];
 
 void sort(polynomial* [], int);
 void printpoly(polynomial* [], int);
-void multiplypoly(polynomial* [], polynomial* [], int);
+int multiplypoly(polynomial* [], polynomial* [], int);
+
 
 int main() {
 	int A_coef[3] = { 2,2,3 }; int A_exp[3] = { 3,2,4 }; // A(x) = 2x^3 + 2x^2 + 3x^4
@@ -47,24 +48,15 @@ int main() {
 	}
 	printf("\n--sorted polynomial A and B--\n");
 	printpoly(A, POLY_SIZE);
-	printpoly(B, POLY_SIZE);
+	printpoly(B, POLY_SIZE); 
 
-	multiplypoly(A, B, POLY_SIZE);
+	int count = multiplypoly(A, B, POLY_SIZE);
 
-
-
+	printf("\n--after sorting polynomial C--\n");
+	printpoly(C, POLY_SIZE + count);
 	return 0;
 }
 
-/*
-void allocpoly_mem(polynomial* list[], int n) {	//Assign values into polynomial
-	for (int i = 0; i < POLY_SIZE; i++) {
-		list[i] = malloc(sizeof(polynomial));
-		list[i]->coef = B_coef[i];
-		list[i]->exp = A_exp[i];
-	}
-}
-*/
 
 void sort(polynomial* list[], int n) { //Sangjin Lee 헤더파일로 빼버리자
 	int max, temp;
@@ -79,7 +71,7 @@ void sort(polynomial* list[], int n) { //Sangjin Lee 헤더파일로 빼버리�
 }
 
 void printpoly(polynomial* list[], int n) {
-	printf("polynomial: ");
+	printf("polynomial: "); //while문으로 돌아서 poly->exp 가 0보다 작으면 print안되는 걸로 짜자
 	for (int i = 0; i < n; i++) {
 		printf("%dx^%d ", list[i]->coef, list[i]->exp);
 		if (i != n - 1)
@@ -94,51 +86,68 @@ void printpoly(polynomial* list[], int n) {
  * 'search' to find if there is any same exp value in C
  * if there is same exp value in C, then add coefs to make one polynomial in one term
  */
-void multiplypoly(polynomial* A_parr[], polynomial* B_parr[], int n) { 
+int multiplypoly(polynomial* A_parr[], polynomial* B_parr[], int n) { 
+	int count = 0;
+	polynomial* new = malloc(sizeof(polynomial));
+
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			C[3*i + j]->coef = (A_parr[i]->coef) * (B_parr[j]->coef);
-			C[3*i + j]->exp = (A_parr[i]->exp) + (B_parr[j]->exp);
+			if (i != 0) {
+				new->coef = (A_parr[i]->coef) * (B_parr[j]->coef);
+				new->exp = (A_parr[i]->exp) + (B_parr[j]->exp);
+
+				printf("\ni: %d,j: %d\n\n", i, j);
+				printf("A_parr[i]->coef: %d\n", A_parr[i]->coef);
+				printf("         *\n");
+				printf("B_parr[i]->coef: %d\n\n", B_parr[j]->coef);
+				printf("A_parr[i]->exp: %d\n", A_parr[i]->exp);
+				printf("         +\n");
+				printf("B_parr[i]->exp: %d\n\n", B_parr[j]->exp);
+
+				int x = binsearch(C, new, 0, 2 + count); //use binarysearch to find matching exponential value in C[]
+				if(x == -1) // count++ if there was existing exponential value
+					count++;
+			}
+			else {
+				C[3 * i + j]->coef = (A_parr[i]->coef) * (B_parr[j]->coef);
+				C[3 * i + j]->exp = (A_parr[i]->exp) + (B_parr[j]->exp);
+			}
 		}
 	}
-	printf("\n--before sorting polynomial C--\n");
-	printpoly(C, MAX_SIZE);
 
 	sort(C, MAX_SIZE);
-
-	printf("\n--after sorting polynomial C--\n");
-	printpoly(C, MAX_SIZE);
-
+	return count;
 }
 
 #define COMPARE(x,y) ( ((x)<(y))? -1 : ((x)==(y))? 0 : 1 )
 
-int binsearch(polynomial* list[], int searchnum, int left, int right) { //여기부터어ㅓㅓㅓㅓㅓㅓㅓ~~~
+int binsearch(polynomial* list[], polynomial* new, int left, int right) {
 	int middle = 0;
 	int R = right;
 
 	while (left <= right) {
 		middle = (left + right) / 2;
-		switch (COMPARE(list[middle]->coef, searchnum)) {
-		case -1: left = middle + 1;
+		switch (COMPARE(list[middle]->exp, new->exp)) {
+		case -1: right = middle - 1;
 			break;
-		case 0: printf("middle: %d\n", middle); return middle;
-		case 1: right = middle - 1;
+		case 0:	list[middle]->coef = (list[middle]->coef) + (new->coef);
+			return 0;
+		case 1: left = middle + 1;
 		}
 	}
-	printf("value does not exist\n");
-
-	printf("shift list to right to make emptied memory dest\n");
 
 	int i = 0;
-	while ((list[i] < searchnum) && (list[i] > 0)) i++;   //search proper dest to insert 'searchnum'
+	while ((list[i]->exp > new->exp) && (list[i]->exp > -1))
+		i++;   //search proper dest to insert 'searchnum'
+
 	int dest = i - 1;
 
 	while ((R + 1) != i) {  //shift array elements to the right, until get free space to insert 'searchnum'
 		list[R + 1] = list[R];
 		R--;
 	}
-	list[dest + 1] = searchnum; //insert 'searchnum'
+	list[dest + 1]->exp = new->exp;
+	list[dest + 1]->coef = new->coef;
 
 	return -1;
 }
