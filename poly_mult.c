@@ -38,7 +38,9 @@ int main() {
 	}
 
 	printf("--original polynomial A and B--\n");
+	printf("A(x): ");
 	printpoly(A, POLY_SIZE);
+	printf("B(x): ");
 	printpoly(B, POLY_SIZE);
 
 	//use selection sort(non-incr) to sort polynomial A and B
@@ -47,12 +49,15 @@ int main() {
 		sort(B, POLY_SIZE);
 	}
 	printf("\n--sorted polynomial A and B--\n");
+	printf("A(x): ");
 	printpoly(A, POLY_SIZE);
+	printf("B(x): ");
 	printpoly(B, POLY_SIZE); 
 
 	int count = multiplypoly(A, B, POLY_SIZE);
 
 	printf("\n--after sorting polynomial C--\n");
+	printf("C(x): ");
 	printpoly(C, POLY_SIZE + count);
 	return 0;
 }
