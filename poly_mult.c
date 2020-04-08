@@ -64,7 +64,8 @@ int main() {
 
 
 void sort(polynomial* list[], int n) { //Sangjin Lee 헤더파일로 빼버리자
-	int max, temp;
+	int max;
+	polynomial* temp;
 	for (int i = 0; i < n - 1; i++) {
 		max = i;
 		for (int j = i + 1; j < n; j++) {
