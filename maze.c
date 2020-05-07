@@ -74,7 +74,10 @@ int main() {
 
 
 void path() {
-	int i, row, col, nextRow, nextCol, direct = 0, found = FALSE;	//dir초기화 하는게 88번 줄에도 있는데 시작할때 예외처리해주기 위해 dir을 0으로 둔 것임. 82번 줄을 아래 else문 안에도 넣을 수 있지만 if(dir == 8)... while문 돌때 항상 조사해주는게 overhead가 크다고 생각했음. 근거는...?
+	int i;
+	int row, col;
+	int nextRow, nextCol;
+	int direct = 0, found = FALSE;	//dir초기화 하는게 95번 줄에도 있는데 시작할때 예외처리해주기 위해 dir을 0으로 둔 것임. 95번 줄을 아래 else문 안에도 넣을 수 있지만 if(dir == 8)... while문 돌때 항상 조사해주는게 overhead가 크다고 생각했음. 근거는...?
 	element position;
 	printf("pathfinding...\n");
 	top = 0;
