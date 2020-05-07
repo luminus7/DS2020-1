@@ -111,11 +111,11 @@ void path() {
 
 				row = nextRow;
 				col = nextCol;
-				dir = 0;
+				direct = 0;
 			}
 			else {
 				printf("***check different path...\n");
-				dir++;
+				direct++;
 			}
 		}
 	}
