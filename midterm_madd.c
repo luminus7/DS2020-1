@@ -8,6 +8,7 @@
 */
 
 #include <stdio.h>
+#include <math.h>
 
 /****************************** fix here ******************************/
 #define Row 4
@@ -20,13 +21,14 @@ int BP[(Row * Col) / 8] = { 65, 136 }; int BV[B_nonzero_elements] = { 5, 2, 4, 1
 
 #define COMPARE(x,y) ( ((x)<(y))? -1 :((x)==(y))? 0 : 1 )
 #define len (Row * Col) / 8
-typedef unsigned char __u_char;		//1바이트
+typedef unsigned char __u_char;
 
 __u_char flag = 0;
 __u_char mask = 128;
 
 __u_char checkbit(__u_char);
-__u_char* madd(__u_char[], __u_char[]);
+__u_char* madd(__u_char[], __u_char[], __u_char[]);
+
 
 int main() {
 	
@@ -35,11 +37,11 @@ int main() {
 	for (int i = 0; i < len; ++i) {
 		posA[i] = (__u_char)AP[i];		//1000 0001	| 0000 1000
 		posB[i] = (__u_char)BP[i];		//0100 0001 | 1000 1000
-		posD[i] = posA[i] | posB[i];	//1100 0001 | 1000 1000		(bitwise or)
+		posD[i] = posA[i] | posB[i];	//1100 0001 | (1)000 1000		(bitwise or)
 	}
 
 	__u_char* DV;
-	DV = madd(posA, posB);
+	DV = madd(posA, posB, &posD);
 	return 0;
 }
 
@@ -49,7 +51,7 @@ __u_char checkbit(__u_char pos) {
 	return temp;
 }
 
-__u_char* madd(__u_char posA[], __u_char posB[]) {
+__u_char* madd(__u_char posA[], __u_char posB[], __u_char posD[]) {
 	int countA = 0;
 	int countB = 0;
 	int countD = 0;
@@ -58,8 +60,8 @@ __u_char* madd(__u_char posA[], __u_char posB[]) {
 	__u_char x, y;
 	__u_char value[100];
 
-	printf("==========================\n");
-	printf("==========================\n");
+	printf("==========================%d \n",__LINE__);
+	printf("==========================%d \n", __LINE__);
 
 	for (int i = 0; i < len; ++i) {
 		printf("posA[%d]: %d\n", i, posA[i]);
@@ -96,7 +98,19 @@ __u_char* madd(__u_char posA[], __u_char posB[]) {
 					countA++;
 					countB++;
 					countD++;
-				}else printf("sum is zero.\n");
+				} else {
+					printf("sum is zero.\n");
+					__u_char dtemp = posD[i];
+					printf("dtemp: %d  ", dtemp);
+					printf("j: %d  ", j);
+					int exp = 7 - j;
+					int subtr = 0;
+					subtr = subtr << exp;
+					printf("(__u_char) 2^%d: %d  ", 7-j, (__u_char)subtr);
+
+					dtemp = dtemp - (__u_char)subtr;
+					printf("(aft calc)dtemp: %d\n", dtemp);
+				}
 				break;
 			case 1:
 				printf("A bit: 1, B bit: 0\n");
@@ -114,5 +128,7 @@ __u_char* madd(__u_char posA[], __u_char posB[]) {
 	for (int i = 0; i < countD ;++i) {
 		printf("\nvalue[%d]: %d", i, value[i]);
 	}
+
+//	malloc(sizeof());
 	return value;
 }
