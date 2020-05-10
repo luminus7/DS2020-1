@@ -27,12 +27,13 @@ __u_char flag = 0;
 __u_char mask = 128;
 
 __u_char checkbit(__u_char);
-__u_char* madd(__u_char[], __u_char[], __u_char[]);
-
+int madd(__u_char[], __u_char[], __u_char[]);
+__u_char value[100];
+__u_char posD[len];
 
 int main() {
-	
-	__u_char posA[len] ,posB[len], posD[len];
+
+	__u_char posA[len], posB[len];// posD[len];
 
 	for (int i = 0; i < len; ++i) {
 		posA[i] = (__u_char)AP[i];		//1000 0001	| 0000 1000
@@ -41,7 +42,18 @@ int main() {
 	}
 
 	__u_char* DV;
-	DV = madd(posA, posB, &posD);
+	int t = madd(posA, posB, &posD);
+
+	printf("\n\n");
+	printf("row: %d\n", Row);
+	printf("col: %d\n", Col);
+	printf("t: %d\n", t);
+	printf("DP[]: ");
+	for (int i = 0; i < len; ++i)
+		printf(" %d", posD[i]);
+	printf("\nDV[]:");
+	for (int i = 0; i < t; ++i)
+		printf(" %d", value[i]);
 	return 0;
 }
 
@@ -51,16 +63,15 @@ __u_char checkbit(__u_char pos) {
 	return temp;
 }
 
-__u_char* madd(__u_char posA[], __u_char posB[], __u_char posD[]) {
+int madd(__u_char posA[], __u_char posB[], __u_char posD[]) {
 	int countA = 0;
 	int countB = 0;
 	int countD = 0;
 	int temp;
 
 	__u_char x, y;
-	__u_char value[100];
 
-	printf("==========================%d \n",__LINE__);
+	printf("==========================%d \n", __LINE__);
 	printf("==========================%d \n", __LINE__);
 
 	for (int i = 0; i < len; ++i) {
@@ -75,7 +86,7 @@ __u_char* madd(__u_char posA[], __u_char posB[], __u_char posD[]) {
 			printf("x: %d  y: %d\n", x, y);
 			printf("COMPARE(x,y) result: %d\n", COMPARE(x, y));
 
-			switch (COMPARE(x,y)) {
+			switch (COMPARE(x, y)) {
 			case -1:					//value in only B position 
 				printf("A bit: 0, B bit: 1\n");
 				temp = BV[countB];
@@ -98,18 +109,20 @@ __u_char* madd(__u_char posA[], __u_char posB[], __u_char posD[]) {
 					countA++;
 					countB++;
 					countD++;
-				} else {				//value in A and B position, sum is ZERO
+				}
+				else {				//value in A and B position, sum is ZERO
 					printf("sum is zero.\n");
 					__u_char dtemp = posD[i];
 					printf("dtemp: %d  ", dtemp);
 					printf("j: %d  ", j);
 					int exp = 7 - j;
-					int subtr = 0;
+					int subtr = 1;
 					subtr = subtr << exp;
-					printf("(__u_char) 2^%d: %d  ", 7-j, (__u_char)subtr);
-
+					printf("(__u_char) 2^%d: %d  \n", 7 - j, (__u_char)subtr);
+					printf("subtr: %d\n", subtr);
 					dtemp = dtemp - (__u_char)subtr;
 					printf("(aft calc)dtemp: %d\n", dtemp);
+					posD[i] = dtemp;	//?
 				}
 				break;
 			case 1:						//value in only A position 
@@ -125,10 +138,10 @@ __u_char* madd(__u_char posA[], __u_char posB[], __u_char posD[]) {
 		}
 	}
 	printf("(non-zero of D) countD: %d", countD);
-	for (int i = 0; i < countD ;++i) {
+	for (int i = 0; i < countD; ++i) {
 		printf("\nvalue[%d]: %d", i, value[i]);
 	}
 
-//	malloc(sizeof());
-	return value;
+	//	malloc(sizeof());
+	return countD;
 }
