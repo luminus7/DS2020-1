@@ -76,7 +76,7 @@ __u_char* madd(__u_char posA[], __u_char posB[], __u_char posD[]) {
 			printf("COMPARE(x,y) result: %d\n", COMPARE(x, y));
 
 			switch (COMPARE(x,y)) {
-			case -1:
+			case -1:					//value in only B position 
 				printf("A bit: 0, B bit: 1\n");
 				temp = BV[countB];
 				value[countD] = temp;
@@ -84,21 +84,21 @@ __u_char* madd(__u_char posA[], __u_char posB[], __u_char posD[]) {
 				countB++;
 				countD++;
 				break;
-			case 0:
-				if (x == 0 && y == 0) {
+			case 0:						//value in A and B position (or) no value in both A and B
+				if (x == 0 && y == 0) {			//no value in both Aand B
 					printf("A bit: 0, B bit: 0\n");
 					break;
 				}
 				printf("A bit: 1, B bit: 1 and...");
 				temp = AV[countA] + BV[countB];
 				printf("temp::: %d\n", temp);
-				if (temp) {
+				if (temp) {				//value in A and B position, sum is NOT Zero
 					printf("sum is NOT zero.\n");
 					value[countD] = temp;
 					countA++;
 					countB++;
 					countD++;
-				} else {
+				} else {				//value in A and B position, sum is ZERO
 					printf("sum is zero.\n");
 					__u_char dtemp = posD[i];
 					printf("dtemp: %d  ", dtemp);
@@ -112,7 +112,7 @@ __u_char* madd(__u_char posA[], __u_char posB[], __u_char posD[]) {
 					printf("(aft calc)dtemp: %d\n", dtemp);
 				}
 				break;
-			case 1:
+			case 1:						//value in only A position 
 				printf("A bit: 1, B bit: 0\n");
 				temp = AV[countA];
 				value[countD] = temp;
