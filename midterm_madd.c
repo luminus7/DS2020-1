@@ -13,9 +13,9 @@
 /****************************** fix here ******************************/
 #define Row 4
 #define Col 4
-#define A_nonzero_elements 3	//A matrixì˜ nonzero elementì˜ ìˆ˜
+#define A_nonzero_elements 3	//A matrixÀÇ nonzero elementÀÇ ¼ö
 int AP[(Row * Col) / 8] = { 129, 8 }; int AV[A_nonzero_elements] = { 11, 7, -1 };
-#define B_nonzero_elements 4	//B matrixì˜ nonzero elementì˜ ìˆ˜
+#define B_nonzero_elements 4	//B matrixÀÇ nonzero elementÀÇ ¼ö
 int BP[(Row * Col) / 8] = { 65, 136 }; int BV[B_nonzero_elements] = { 5, 2, 4, 1 };
 /**********************************************************************/
 
@@ -28,22 +28,21 @@ __u_char mask = 128;
 
 __u_char checkbit(__u_char);
 int madd(__u_char[], __u_char[], __u_char[]);
-__u_char value[100];
 __u_char posD[len];
+__u_char value[(A_nonzero_elements * B_nonzero_elements)];		//value¸¦ Àü¿ªÀ¸·Î ¼±¾ğÇÑ°Å ¸¾¿¡ ¾Èµç´Ù. Æ÷ÀÎÅÍ·Î ¹ŞÀ» ¼ö ÀÖ°Ô ¹Ù²ÙÀÚ or linkedlist°°Àº°Å ¾²ÀÚ
 
 int main() {
 
 	__u_char posA[len], posB[len];// posD[len];
 
 	for (int i = 0; i < len; ++i) {
-		posA[i] = (__u_char)AP[i];		//1000 0001	| 0000 1000
-		posB[i] = (__u_char)BP[i];		//0100 0001 | 1000 1000
-		posD[i] = posA[i] | posB[i];	//1100 0001 | (1)000 1000		(bitwise or)
+		posA[i] = (__u_char)AP[i];
+		posB[i] = (__u_char)BP[i];
+		posD[i] = posA[i] | posB[i];
 	}
+	int t = madd(posA, posB, posD);
 
-	__u_char* DV;
-	int t = madd(posA, posB, &posD);
-
+	/* print matrix in given format */
 	printf("\n\n");
 	printf("row: %d\n", Row);
 	printf("col: %d\n", Col);
@@ -67,81 +66,48 @@ int madd(__u_char posA[], __u_char posB[], __u_char posD[]) {
 	int countA = 0;
 	int countB = 0;
 	int countD = 0;
-	int temp;
+	int sum;
 
 	__u_char x, y;
 
-	printf("==========================%d \n", __LINE__);
-	printf("==========================%d \n", __LINE__);
-
 	for (int i = 0; i < len; ++i) {
-		printf("posA[%d]: %d\n", i, posA[i]);
-		printf("posB[%d]: %d\n", i, posB[i]);
-		printf("==========================\n");
-		printf("==========================\n");
 		flag |= mask;
-
 		for (int j = 0; j < 8; ++j) {
-			x = checkbit(posA[i]); y = checkbit(posB[i]);
-			printf("x: %d  y: %d\n", x, y);
-			printf("COMPARE(x,y) result: %d\n", COMPARE(x, y));
-
+			x = checkbit(posA[i]);
+			y = checkbit(posB[i]);
 			switch (COMPARE(x, y)) {
-			case -1:					//value in only B position 
-				printf("A bit: 0, B bit: 1\n");
-				temp = BV[countB];
-				value[countD] = temp;
-				printf("temp: %d\n", temp);
-				countB++;
-				countD++;
+			case -1:								//value in only B position 
+				sum = BV[countB];
+				value[countD] = sum;
+				countB++; countD++;
 				break;
-			case 0:						//value in A and B position (or) no value in both A and B
-				if (x == 0 && y == 0) {			//no value in both Aand B
-					printf("A bit: 0, B bit: 0\n");
+			case 0:									//value in A and B position (or) no value in both A and B
+				if (x == 0 && y == 0) {				//no value in both Aand B
 					break;
 				}
-				printf("A bit: 1, B bit: 1 and...");
-				temp = AV[countA] + BV[countB];
-				printf("temp::: %d\n", temp);
-				if (temp) {				//value in A and B position, sum is NOT Zero
-					printf("sum is NOT zero.\n");
-					value[countD] = temp;
-					countA++;
-					countB++;
-					countD++;
+				sum = AV[countA] + BV[countB];
+				if (sum) {							//value in A and B position, sum is NOT Zero
+					value[countD] = sum;
+					countA++; countB++; countD++;
 				}
-				else {				//value in A and B position, sum is ZERO
-					printf("sum is zero.\n");
+				else {								//value in A and B position, sum is ZERO
 					__u_char dtemp = posD[i];
-					printf("dtemp: %d  ", dtemp);
-					printf("j: %d  ", j);
 					int exp = 7 - j;
 					int subtr = 1;
 					subtr = subtr << exp;
-					printf("(__u_char) 2^%d: %d  \n", 7 - j, (__u_char)subtr);
-					printf("subtr: %d\n", subtr);
 					dtemp = dtemp - (__u_char)subtr;
-					printf("(aft calc)dtemp: %d\n", dtemp);
-					posD[i] = dtemp;	//?
+					posD[i] = dtemp;
 				}
 				break;
 			case 1:						//value in only A position 
-				printf("A bit: 1, B bit: 0\n");
-				temp = AV[countA];
-				value[countD] = temp;
-				printf("temp: %d\n", temp);
-				countA++;
-				countD++;
+				sum = AV[countA];
+				value[countD] = sum;
+				countA++; countD++;
 			}
 			flag = flag >> 1;
-			printf("==========================\n");
 		}
 	}
-	printf("(non-zero of D) countD: %d", countD);
 	for (int i = 0; i < countD; ++i) {
-		printf("\nvalue[%d]: %d", i, value[i]);
 	}
-
-	//	malloc(sizeof());
 	return countD;
 }
